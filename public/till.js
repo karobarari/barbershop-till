@@ -259,8 +259,8 @@ $('#btn-eod').addEventListener('click', async () => {
       <div><div class="muted" style="font-size:13px">Paid through Fresha</div><div class="num" style="font-size:26px;font-weight:800;color:var(--fresha)">${money(t.fresha)}</div></div>
     </div>
     <p class="muted" style="margin:12px 0 0;font-size:13px">Includes tips paid the same way as the cut.</p>`;
-  const row = (b, tag = 'td') => `<tr><${tag}>${esc(b.name)}</${tag}><td class="r">${b.cuts}</td><td class="r">${money(b.takings)}</td><td class="r">${money(b.tips)}</td><td class="r">${money(b.wax)}</td><td class="r">${money(b.card)}</td><td class="r">${money(b.cash)}</td><td class="r">${money(b.fresha)}</td><td class="r"><b>${money(b.total)}</b></td><td class="r">${money(b.commission)}</td></tr>`;
-  $('#eod-barbers').innerHTML = summary.barbers.map((b) => row(b)).join('') || '<tr><td colspan="10" class="muted">Nothing logged today.</td></tr>';
+  const row = (b, tag = 'td') => `<tr><${tag}>${esc(b.name)}</${tag}><td class="r">${b.cuts}</td><td class="r">${money(b.takings)}</td><td class="r">${money(b.tips)}</td><td class="r">${money(b.wax)}</td><td class="r">${money(b.card)}</td><td class="r">${money(b.cash)}</td><td class="r">${money(b.fresha)}</td><td class="r"><b>${money(b.total)}</b></td></tr>`;
+  $('#eod-barbers').innerHTML = summary.barbers.map((b) => row(b)).join('') || '<tr><td colspan="9" class="muted">Nothing logged today.</td></tr>';
   $('#eod-foot').innerHTML = summary.barbers.length ? row({ name: 'Shop total', ...t }) : '';
   show('eod');
 });
