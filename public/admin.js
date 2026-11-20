@@ -240,6 +240,7 @@ $('#svc-rows').addEventListener('click', async (ev) => {
 async function loadSettings() {
   const settings = await api('/api/admin/settings');
   $('#wax-price').value = (Number(settings.wax_price_pence || 1000) / 100).toFixed(2);
+  $('#cash-float').value = (Number(settings.cash_float_pence ?? 2000) / 100).toFixed(2);
   $('#shop-rows').innerHTML = state.shops.map((s) => `
     <form class="form-row" data-shop="${s.id}">
       <input type="text" value="${esc(s.name)}" required>
@@ -261,6 +262,11 @@ $('#shop-rows').addEventListener('submit', async (ev) => {
 $('#wax-form').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   try { await api('/api/admin/settings', { method: 'PUT', body: { wax_price_pence: toPence($('#wax-price').value) } }); toast('Wax price saved'); } catch (e) { toast(e.message, true); }
+});
+
+$('#float-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  try { await api('/api/admin/settings', { method: 'PUT', body: { cash_float_pence: toPence($('#cash-float').value) } }); toast('Cash float saved'); } catch (e) { toast(e.message, true); }
 });
 
 boot();

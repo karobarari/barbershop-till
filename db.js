@@ -113,6 +113,8 @@ async function seed() {
     await query(`INSERT INTO shops (name, sort) VALUES ('Shop 2', 2) RETURNING id`);
   }
   await applyPriceList();
+  // Cash left in each till overnight, added to the End of day drawer figure.
+  await query(`INSERT INTO settings (key, value) VALUES ('cash_float_pence', '2000') ON CONFLICT (key) DO NOTHING`);
 }
 
 // Brings the services up to the current price-list version. A brand-new database

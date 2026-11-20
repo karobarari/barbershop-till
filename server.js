@@ -125,7 +125,8 @@ app.get('/api/till/:shopId/bootstrap', auth('till', 'admin'), wrap(async (req, r
      WHERE b.active ORDER BY (b.shop_id = $1) DESC, b.sort, b.name`, [shopId]);
   const services = await db.query('SELECT id, name, price_pence FROM services WHERE shop_id=$1 AND active ORDER BY sort, id', [shopId]);
   const [wax] = await db.query(`SELECT value FROM settings WHERE key='wax_price_pence'`);
-  res.json({ shop, barbers, services, wax_price_pence: toInt(wax && wax.value, 1000), date: todayLondon() });
+  const [float] = await db.query(`SELECT value FROM settings WHERE key='cash_float_pence'`);
+  res.json({ shop, barbers, services, wax_price_pence: toInt(wax && wax.value, 1000), cash_float_pence: toInt(float && float.value, 2000), date: todayLondon() });
 }));
 
 app.post('/api/till/entries', auth('till', 'admin'), wrap(async (req, res) => {
@@ -276,11 +277,19 @@ app.get('/api/admin/settings', auth('admin'), wrap(async (req, res) => {
   res.json(Object.fromEntries(rows.map((r) => [r.key, r.value])));
 }));
 
+// Accepts any of the known settings; each one sent is validated and saved.
+const SETTINGS = { wax_price_pence: 'Wax price', cash_float_pence: 'Cash float' };
 app.put('/api/admin/settings', auth('admin'), wrap(async (req, res) => {
-  const wax = toInt(req.body.wax_price_pence, -1);
-  if (wax < 0) throw bad('Wax price required');
-  await db.query(`INSERT INTO settings (key, value) VALUES ('wax_price_pence', $1)
-    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`, [String(wax)]);
+  const keys = Object.keys(SETTINGS).filter((k) => req.body[k] !== undefined);
+  if (!keys.length) throw bad('Nothing to save');
+  for (const k of keys) {
+    const v = toInt(req.body[k], -1);
+    if (v < 0 || v > 100000) throw bad(`${SETTINGS[k]} looks wrong`);
+  }
+  for (const k of keys) {
+    await db.query(`INSERT INTO settings (key, value) VALUES ($1, $2)
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`, [k, String(toInt(req.body[k]))]);
+  }
   res.json({ ok: true });
 }));
 

@@ -2,7 +2,7 @@ const api = makeApi('till_token', () => { store('till_token', null); show('login
 const TIP_OPTIONS = [0, 100, 200, 300, 500, 1000];
 
 const state = {
-  shopId: null, shop: null, barbers: [], services: [], date: null,
+  shopId: null, shop: null, barbers: [], services: [], cashFloat: 2000, date: null,
   form: null, today: null, armedVoid: null,
 };
 
@@ -49,7 +49,7 @@ $('#btn-switch').addEventListener('click', () => { store('till_shop', null); pic
 
 async function loadShop() {
   const data = await api(`/api/till/${state.shopId}/bootstrap`);
-  Object.assign(state, { shop: data.shop, barbers: data.barbers, services: data.services, date: data.date });
+  Object.assign(state, { shop: data.shop, barbers: data.barbers, services: data.services, cashFloat: data.cash_float_pence, date: data.date });
   $('#shop-name').textContent = data.shop.name;
   $('#today-date').textContent = prettyDate(data.date);
   document.title = `Till · ${data.shop.name}`;
@@ -255,10 +255,10 @@ $('#btn-eod').addEventListener('click', async () => {
   $('#eod-check').innerHTML = `
     <div class="row-inline" style="gap:28px">
       <div><div class="muted" style="font-size:13px">Card machine should show</div><div class="num" style="font-size:26px;font-weight:800;color:var(--card)">${money(t.card)}</div></div>
-      <div><div class="muted" style="font-size:13px">Cash in the drawer should be</div><div class="num" style="font-size:26px;font-weight:800;color:var(--cash)">${money(t.cash)}</div></div>
+      <div><div class="muted" style="font-size:13px">Cash in the drawer should be</div><div class="num" style="font-size:26px;font-weight:800;color:var(--cash)">${money(t.cash + state.cashFloat)}</div><div class="muted" style="font-size:13px">${money(t.cash)} taken + ${money(state.cashFloat)} float</div></div>
       <div><div class="muted" style="font-size:13px">Paid through Fresha</div><div class="num" style="font-size:26px;font-weight:800;color:var(--fresha)">${money(t.fresha)}</div></div>
     </div>
-    <p class="muted" style="margin:12px 0 0;font-size:13px">Includes tips paid the same way as the cut.</p>`;
+    <p class="muted" style="margin:12px 0 0;font-size:13px">Includes tips paid the same way as the cut. Leave the ${money(state.cashFloat)} float in the till for tomorrow.</p>`;
   const row = (b, tag = 'td') => `<tr><${tag}>${esc(b.name)}</${tag}><td class="r">${b.cuts}</td><td class="r">${money(b.takings)}</td><td class="r">${money(b.tips)}</td><td class="r">${money(b.wax)}</td><td class="r">${money(b.card)}</td><td class="r">${money(b.cash)}</td><td class="r">${money(b.fresha)}</td><td class="r"><b>${money(b.total)}</b></td></tr>`;
   $('#eod-barbers').innerHTML = summary.barbers.map((b) => row(b)).join('') || '<tr><td colspan="9" class="muted">Nothing logged today.</td></tr>';
   $('#eod-foot').innerHTML = summary.barbers.length ? row({ name: 'Shop total', ...t }) : '';
