@@ -1,0 +1,20 @@
+{
+  "name": "barbershop-till",
+  "version": "1.0.0",
+  "description": "Barbershop till + owner admin (multi-shop)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "private": true
+}

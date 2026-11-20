@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <title>Admin</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<div id="view-login" class="center hidden">
+  <form class="panel auth" id="login-form">
+    <h1>Owner login</h1>
+    <input type="password" id="login-pw" placeholder="Admin password" autocomplete="current-password" required>
+    <div class="error" id="login-err"></div>
+    <button class="btn primary" type="submit">Log in</button>
+  </form>
+</div>
+
+<div id="view-app" class="hidden">
+  <header class="topbar">
+    <div class="brand"><h1>Admin</h1><span class="sub">All shops</span></div>
+    <div class="actions">
+      <a class="btn" href="/" style="text-decoration:none">Open till</a>
+      <button class="btn" id="btn-logout">Log out</button>
+    </div>
+  </header>
+  <nav class="tabs">
+    <button class="tab active" data-tab="day">Day</button>
+    <button class="tab" data-tab="history">History</button>
+    <button class="tab" data-tab="barbers">Barbers</button>
+    <button class="tab" data-tab="services">Services &amp; prices</button>
+    <button class="tab" data-tab="settings">Shops &amp; settings</button>
+  </nav>
+
+  <main class="wrap">
+    <!-- Day -->
+    <section data-panel="day">
+      <div class="row-inline no-print" style="justify-content:space-between">
+        <div class="row-inline">
+          <button class="btn" id="day-prev">←</button>
+          <input type="date" id="day-date">
+          <button class="btn" id="day-next">→</button>
+          <button class="btn" id="day-today">Today</button>
+        </div>
+        <div class="row-inline">
+          <select id="day-shop"></select>
+          <button class="btn" id="day-csv">Download CSV</button>
+          <button class="btn" onclick="window.print()">Print</button>
+        </div>
+      </div>
+      <h2 style="margin:18px 0 0;font-size:22px" id="day-title"></h2>
+      <p class="muted" style="margin:4px 0 0;font-size:13px" id="day-live"></p>
+      <div class="stats" id="day-stats" style="margin-top:14px"></div>
+
+      <div id="day-shops-wrap">
+        <div class="section-title">By shop</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Shop</th><th class="r">Cuts</th><th class="r">Takings</th><th class="r">Tips</th><th class="r">Wax</th><th class="r">Card</th><th class="r">Cash</th><th class="r">Fresha</th><th class="r">Total</th></tr></thead>
+          <tbody id="day-shops"></tbody>
+        </table></div>
+      </div>
+
+      <div class="section-title">By barber</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Barber</th><th class="r">Cuts</th><th class="r">Takings</th><th class="r">Tips</th><th class="r">Wax</th><th class="r">Card</th><th class="r">Cash</th><th class="r">Fresha</th><th class="r">Total</th><th class="r">50% of cuts</th></tr></thead>
+        <tbody id="day-barbers"></tbody>
+      </table></div>
+
+      <div class="section-title">Full log</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Time</th><th>Shop</th><th>Barber</th><th>Service</th><th class="r">Price</th><th class="r">Tip</th><th class="r">Wax</th><th class="r">Total</th><th>Paid</th><th class="no-print"></th></tr></thead>
+        <tbody id="day-log"></tbody>
+      </table></div>
+    </section>
+
+    <!-- History -->
+    <section data-panel="history" class="hidden">
+      <div class="row-inline" style="justify-content:space-between">
+        <h2 style="margin:0;font-size:22px">History</h2>
+        <select id="hist-range">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="365">Last year</option>
+        </select>
+      </div>
+      <div class="stats" id="hist-stats" style="margin-top:14px"></div>
+      <p class="muted" style="font-size:13px">Tap a day to open its full log.</p>
+      <div class="table-wrap"><table>
+        <thead id="hist-head"></thead>
+        <tbody id="hist-body"></tbody>
+      </table></div>
+    </section>
+
+    <!-- Barbers -->
+    <section data-panel="barbers" class="hidden">
+      <h2 style="margin:0 0 6px;font-size:22px">Barbers</h2>
+      <p class="muted" style="margin:0 0 14px;font-size:14px">Barbers appear on the till of their home shop. They can still log at the other shop under "Covering from another shop".</p>
+      <div class="panel" style="margin-bottom:14px">
+        <form class="form-row" id="barber-add">
+          <input type="text" id="nb-name" placeholder="Barber name" required>
+          <select id="nb-shop"></select>
+          <input class="money num" id="nb-rate" value="50" inputmode="decimal" title="Commission %"> <span class="muted">% commission</span>
+          <button class="btn primary">Add barber</button>
+        </form>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Name</th><th>Home shop</th><th>Commission %</th><th>Active</th><th></th></tr></thead>
+        <tbody id="barber-rows"></tbody>
+      </table></div>
+    </section>
+
+    <!-- Services -->
+    <section data-panel="services" class="hidden">
+      <div class="row-inline" style="justify-content:space-between;margin-bottom:14px">
+        <h2 style="margin:0;font-size:22px">Services &amp; prices</h2>
+        <select id="svc-shop"></select>
+      </div>
+      <div class="panel" style="margin-bottom:14px">
+        <form class="form-row" id="svc-add">
+          <input type="text" id="ns-name" placeholder="Service name" required>
+          <span class="muted">£</span><input class="money num" id="ns-price" placeholder="0.00" inputmode="decimal" required>
+          <button class="btn primary">Add service</button>
+        </form>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Order</th><th>Service</th><th>Price £</th><th>On till</th><th></th></tr></thead>
+        <tbody id="svc-rows"></tbody>
+      </table></div>
+    </section>
+
+    <!-- Settings -->
+    <section data-panel="settings" class="hidden">
+      <h2 style="margin:0 0 14px;font-size:22px">Shops &amp; settings</h2>
+      <div class="section-title">Shop names</div>
+      <div class="panel" id="shop-rows" style="display:grid;gap:10px"></div>
+      <div class="section-title">Hair wax</div>
+      <div class="panel">
+        <form class="form-row" id="wax-form">
+          <span class="muted">Price per wax £</span>
+          <input class="money num" id="wax-price" inputmode="decimal" required>
+          <button class="btn primary">Save</button>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/common.js"></script>
+<script src="/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Till</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<!-- Device setup: till password (once per device) -->
+<div id="view-login" class="center hidden">
+  <form class="panel auth" id="login-form">
+    <h1>Set up this till</h1>
+    <p class="muted" style="margin:0">Enter the shop till password. You only need to do this once on this device.</p>
+    <input type="password" id="login-pw" placeholder="Till password" autocomplete="current-password" required>
+    <div class="error" id="login-err"></div>
+    <button class="btn primary" type="submit">Continue</button>
+  </form>
+</div>
+
+<!-- Choose shop -->
+<div id="view-shop" class="center hidden">
+  <div class="panel auth">
+    <h1>Which shop is this?</h1>
+    <div class="grid" id="shop-list" style="grid-template-columns:1fr"></div>
+  </div>
+</div>
+
+<!-- Main till -->
+<div id="view-till" class="hidden">
+  <header class="topbar">
+    <div class="brand"><h1 id="shop-name">Till</h1><span class="sub" id="today-date"></span></div>
+    <div class="actions">
+      <button class="btn" id="btn-eod">End of day</button>
+      <button class="btn" id="btn-switch">Switch shop</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Step 1: barber -->
+    <section id="step-barber">
+      <div class="section-title">Who did the cut?</div>
+      <div class="grid" id="barbers"></div>
+      <p class="muted hidden" id="no-barbers">No barbers yet. The owners can add them in Admin (<a href="/admin" style="color:var(--accent)">/admin</a>).</p>
+      <div id="other-wrap" class="hidden">
+        <div class="section-title">Covering from another shop</div>
+        <div class="grid" id="barbers-other"></div>
+      </div>
+    </section>
+
+    <!-- Step 2: log cut -->
+    <section id="step-log" class="hidden">
+      <div class="row-inline" style="justify-content:space-between;margin-top:4px">
+        <h2 style="margin:0;font-size:24px" id="log-barber"></h2>
+        <button class="btn" id="btn-cancel">Cancel</button>
+      </div>
+
+      <div class="section-title">Service</div>
+      <div class="grid" id="services"></div>
+      <div class="row-inline" style="margin-top:10px">
+        <span class="muted">Price</span>
+        <input class="money num" id="price" inputmode="decimal" style="width:120px">
+        <span class="muted" style="font-size:13px">Change this for a discount or extra</span>
+      </div>
+
+      <div class="section-title">Tip</div>
+      <div class="chips" id="tips"></div>
+      <input class="num hidden" id="tip-custom" inputmode="decimal" placeholder="Tip £" style="margin-top:10px;width:140px">
+
+      <div class="section-title">Paid by</div>
+      <div class="pay three">
+        <button type="button" data-pay="card">💳 Card</button>
+        <button type="button" data-pay="cash">💷 Cash</button>
+        <button type="button" data-pay="fresha">📱 Fresha</button>
+      </div>
+
+      <div class="total-bar" style="margin-top:22px">
+        <div>
+          <div class="muted" style="font-size:13px">Total to take</div>
+          <div class="big num" id="total">£0.00</div>
+          <div class="muted" style="font-size:13px" id="breakdown"></div>
+        </div>
+        <button class="btn primary" id="btn-save" style="padding:18px 28px;font-size:18px">Log cut</button>
+      </div>
+    </section>
+
+    <!-- Today's log -->
+    <section id="today-section">
+      <div class="section-title">Today at this shop</div>
+      <div class="table-wrap">
+        <table class="barber-sheet">
+          <thead id="today-head"></thead>
+          <tbody id="today-log"></tbody>
+          <tfoot id="today-foot"></tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- End of day -->
+<div id="view-eod" class="hidden">
+  <header class="topbar">
+    <div class="brand"><h1>End of day</h1><span class="sub" id="eod-sub"></span></div>
+    <div class="actions">
+      <button class="btn" onclick="window.print()">Print</button>
+      <button class="btn primary" id="btn-back">Back to till</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="stats" id="eod-stats"></div>
+    <div class="section-title">Cash-up check</div>
+    <div class="panel" id="eod-check"></div>
+    <div class="section-title">By barber</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Barber</th><th class="r">Cuts</th><th class="r">Takings</th><th class="r">Tips</th><th class="r">Wax</th><th class="r">Card</th><th class="r">Cash</th><th class="r">Fresha</th><th class="r">Total</th><th class="r">50% of cuts</th></tr></thead>
+        <tbody id="eod-barbers"></tbody>
+        <tfoot id="eod-foot"></tfoot>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="/common.js"></script>
+<script src="/till.js"></script>
+</body>
+</html>
