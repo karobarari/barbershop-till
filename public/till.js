@@ -192,7 +192,6 @@ function renderSheet(entries) {
 
   if (!cols.length) {
     $('#today-head').innerHTML = '';
-    $('#today-foot').innerHTML = '';
     $('#today-log').innerHTML = '<tr><td class="muted">Nothing logged yet today.</td></tr>';
     return;
   }
@@ -214,13 +213,6 @@ function renderSheet(entries) {
     }).join('')}</tr>`;
   }
   $('#today-log').innerHTML = html;
-
-  // Total per barber (voided cuts don't count).
-  $('#today-foot').innerHTML = `<tr><td class="row-no">Total</td>${cols.map((c) => {
-    const live = c.entries.filter((e) => !e.voided);
-    const sum = live.reduce((s, e) => s + e.price_pence + e.tip_pence + e.wax_pence, 0);
-    return `<td class="cell-total"><div class="num">${money(sum)}</div><div class="muted">${live.length} cut${live.length === 1 ? '' : 's'}</div></td>`;
-  }).join('')}</tr>`;
 }
 
 function statCards(t) {
